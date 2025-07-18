@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseSuperConduit Energy System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>⚡ PulseSuperConduit Energy System</h1>
+            <p class="subtitle">Revolutionary On-Demand Core Spinning with Underground Energy Storage</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <h3>🎛️ System Controls</h3>
+                
+                <div class="control-section">
+                    <h4>Core Specifications</h4>
+                    <div class="spec-grid">
+                        <div class="spec-item">
+                            <span class="label">Max Power:</span>
+                            <span class="value">200 GW</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="label">Max RPM:</span>
+                            <span class="value">200,000</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="label">Core Mass:</span>
+                            <span class="value">199 kg</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="label">Startup Energy:</span>
+                            <span class="value">2,217 GJ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h4>Network Configuration</h4>
+                    <div class="input-group">
+                        <label for="conduit-length">Conduit Length (miles):</label>
+                        <input type="range" id="conduit-length" min="2" max="5" value="4" step="1">
+                        <span id="conduit-length-value">4</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="num-conduits">Number of Conduits:</label>
+                        <input type="range" id="num-conduits" min="2" max="5" value="3" step="1">
+                        <span id="num-conduits-value">3</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="active-conduits">Active Conduits:</label>
+                        <input type="range" id="active-conduits" min="1" max="3" value="2" step="1">
+                        <span id="active-conduits-value">2</span>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h4>Operational Scenarios</h4>
+                    <select id="scenario-select">
+                        <option value="Peak Demand">Peak Demand (15min, 4x/day)</option>
+                        <option value="Base Load">Base Load (30min, 2x/day)</option>
+                        <option value="Emergency">Emergency (60min, 1x/day)</option>
+                        <option value="Storage Fill">Storage Fill (120min, 0.5x/day)</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h4>Manual Control</h4>
+                    <div class="input-group">
+                        <label for="spin-duration">Spin Duration (minutes):</label>
+                        <input type="range" id="spin-duration" min="1" max="180" value="15" step="1">
+                        <span id="spin-duration-value">15</span>
+                    </div>
+                    <div class="button-group">
+                        <button id="start-btn" class="btn btn-start">🚀 Start Simulation</button>
+                        <button id="stop-btn" class="btn btn-stop">⏹️ Emergency Stop</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Display -->
+            <div class="status-panel">
+                <h3>📊 System Status</h3>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-label">System Status</div>
+                        <div id="system-status" class="status-value">🔴 STANDBY</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Core RPM</div>
+                        <div id="core-rpm" class="status-value">0</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Power Output</div>
+                        <div id="power-output" class="status-value">0.0 GW</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Kinetic Energy</div>
+                        <div id="kinetic-energy" class="status-value">0 GJ</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Energy Flow Chart -->
+            <div class="chart-panel">
+                <h3>🌊 Real-Time Energy Flow</h3>
+                <div id="energy-flow-chart" class="chart-container"></div>
+            </div>
+
+            <!-- Network Visualization -->
+            <div class="network-panel">
+                <h3>🌐 SuperConduit Network</h3>
+                <div id="network-status" class="network-status">
+                    <div class="network-item">
+                        <span class="label">Active Conduits:</span>
+                        <span id="active-conduits-status">2</span>
+                    </div>
+                    <div class="network-item">
+                        <span class="label">Standby Conduits:</span>
+                        <span id="standby-conduits-status">1</span>
+                    </div>
+                    <div class="network-item">
+                        <span class="label">Redundancy Factor:</span>
+                        <span id="redundancy-factor">1.5x</span>
+                    </div>
+                    <div class="network-item">
+                        <span class="label">Total Capacity:</span>
+                        <span id="total-capacity">0 GWh</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Safety Analysis -->
+            <div class="safety-panel">
+                <h3>🛡️ Safety Analysis</h3>
+                <div class="safety-status">
+                    <div id="safety-indicator" class="safety-indicator">🟢 MAXIMUM SAFETY</div>
+                    <div id="safety-message" class="safety-message">Core at rest - Zero kinetic energy</div>
+                </div>
+                <div class="safety-metrics">
+                    <div class="metric">
+                        <span class="label">Material Stress:</span>
+                        <span id="material-stress" class="value">0%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Risk Level:</span>
+                        <span id="risk-level" class="value">Minimal</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="performance-panel">
+                <h3>📈 Performance Metrics</h3>
+                <div id="performance-chart" class="chart-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
